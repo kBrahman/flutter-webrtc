@@ -102,6 +102,8 @@ void postEvent(FlutterEventSink _Nonnull sink, id _Nullable event) {
   BOOL _speakerOnButPreferBluetooth;
   AVAudioSessionPort _preferredInput;
   AudioManager* _audioManager;
+  Recorder *videoRecorder;
+  Recorder *rec;
 #if TARGET_OS_IPHONE
   FLutterRTCVideoPlatformViewFactory *_platformViewFactory;
 #endif
@@ -121,6 +123,7 @@ static FlutterWebRTCPlugin *sharedSingleton;
 @synthesize eventSink = _eventSink;
 @synthesize preferredInput = _preferredInput;
 @synthesize audioManager = _audioManager;
+
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =
@@ -1411,7 +1414,19 @@ bypassVoiceProcessing:(BOOL)bypassVoiceProcessing {
                 message:[NSString stringWithFormat:@"Error: peerConnection not found!"]
                 details:nil]);
     }
-  } else {
+  }else if([@"startRecordToFile" isEqualToString:call.method]){
+      NSDictionary *arguments = call.arguments;
+      NSString *path = arguments[@"path"];
+      NSString *trackId = arguments[@"videoTrackId"];
+      NSString *connectionId = arguments[@"peerConnectionId"];
+      RTCVideoTrack* track=(RTCVideoTrack *)[self trackForId:trackId peerConnectionId:connectionId];
+      result(nil);
+      rec=[[Recorder alloc]initWithPathTrackChannel:path track:track channel: _methodChannel];
+      [rec startRecording];
+  }else if ([@"stopRecordToFile" isEqualToString:call.method]){
+      [rec stopRecording];
+      result(nil);
+  }else {
     [self handleFrameCryptorMethodCall:call result:result];
   }
 }

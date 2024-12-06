@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <WebRTC/WebRTC.h>
 #import "LocalTrack.h"
+#import "Recorder.h"
 
 @class FlutterRTCVideoRenderer;
 @class FlutterRTCFrameCapturer;
@@ -73,6 +74,6 @@ typedef void (^CapturerStopHandler)(CompletionHandler _Nonnull handler);
 - (RTCRtpReceiver* _Nullable)getRtpReceiverById:(RTCPeerConnection* _Nonnull)peerConnection Id:(NSString* _Nonnull)Id;
 - (RTCRtpSender* _Nullable)getRtpSenderById:(RTCPeerConnection* _Nonnull)peerConnection Id:(NSString* _Nonnull)Id;
 
-+ (FlutterWebRTCPlugin * _Nullable)sharedSingleton;
++ (FlutterWebRTCPlugin *)sharedSingleton;
 
 @end
