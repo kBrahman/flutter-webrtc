@@ -374,7 +374,6 @@ class GetUserMediaImpl {
         PeerConnectionFactory pcFactory = stateProvider.getPeerConnectionFactory();
         AudioSource audioSource = pcFactory.createAudioSource(audioConstraints);
 
-
         if (deviceId != null) {
             try {
                 setPreferredInputDevice(deviceId);
@@ -396,9 +395,9 @@ class GetUserMediaImpl {
         trackParams.putString("readyState", track.state().toString());
         trackParams.putBoolean("remote", false);
 
-        if (deviceId == null) {
+        if (deviceId == null)
             deviceId = "" + getPreferredInputDevice(preferredInput);
-        }
+
 
         ConstraintsMap settings = new ConstraintsMap();
         settings.putString("deviceId", deviceId);
@@ -598,6 +597,7 @@ class GetUserMediaImpl {
      */
     private void getUserMedia(ConstraintsMap constraints, Result result, MediaStream mediaStream, List<String> grantedPermissions) {
         ConstraintsMap[] trackParams = new ConstraintsMap[2];
+
         // If we fail to create either, destroy the other one and fail.
         if (grantedPermissions.contains(PERMISSION_VIDEO) && (trackParams[1] = getUserVideo(constraints, mediaStream)) == null) {
             for (MediaStreamTrack track : mediaStream.audioTracks) {
@@ -1276,7 +1276,7 @@ class GetUserMediaImpl {
         if (devices.length > 0) {
             for (int i = 0; i < devices.length; i++) {
                 AudioDeviceInfo device = devices[i];
-                if (deviceId.equals(AudioUtils.getAudioDeviceId(device))) {
+                if(deviceId.equals(AudioUtils.getAudioDeviceId(device))) {
                     preferredInput = device;
                     audioDeviceModule.setPreferredInputDevice(preferredInput);
                     return;
