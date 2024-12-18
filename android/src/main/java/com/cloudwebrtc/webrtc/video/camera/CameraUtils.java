@@ -51,7 +51,7 @@ public class CameraUtils {
   public void setFocusMode(MethodCall call, AnyThreadResult result) {
     String trackId = call.argument("trackId");
     String mode = call.argument("mode");
-    VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
+    GetUserMediaImpl.VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
     if (info == null) {
       resultError("setFocusMode", "Video capturer not found for id: " + trackId, result);
       return;
@@ -170,7 +170,7 @@ public class CameraUtils {
   public void setFocusPoint(MethodCall call, Point focusPoint, AnyThreadResult result) {
     String trackId = call.argument("trackId");
     String mode = call.argument("mode");
-    VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
+    GetUserMediaImpl.VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
     if (info == null) {
       resultError("setFocusMode", "Video capturer not found for id: " + trackId, result);
       return;
@@ -264,7 +264,7 @@ public class CameraUtils {
   public void setExposurePoint(MethodCall call,Point exposurePoint,  AnyThreadResult result) {
     String trackId = call.argument("trackId");
     String mode = call.argument("mode");
-    VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
+    GetUserMediaImpl.VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
     if (info == null) {
       resultError("setExposurePoint", "Video capturer not found for id: " + trackId, result);
       return;
@@ -361,7 +361,7 @@ public class CameraUtils {
   }
 
   public void hasTorch(String trackId, MethodChannel.Result result) {
-    VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
+    GetUserMediaImpl.VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
     if (info == null) {
       resultError("hasTorch", "Video capturer not found for id: " + trackId, result);
       return;
@@ -427,7 +427,7 @@ public class CameraUtils {
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public void setZoom(String trackId, double zoomLevel, MethodChannel.Result result) {
-    VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
+    GetUserMediaImpl.VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
     if (info == null) {
       resultError("setZoom", "Video capturer not found for id: " + trackId, result);
       return;
@@ -538,7 +538,7 @@ public class CameraUtils {
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public void setTorch(String trackId, boolean torch, MethodChannel.Result result) {
-    VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
+    GetUserMediaImpl.VideoCapturerInfo info = getUserMediaImpl.getCapturerInfo(trackId);
     if (info == null) {
       resultError("setTorch", "Video capturer not found for id: " + trackId, result);
       return;

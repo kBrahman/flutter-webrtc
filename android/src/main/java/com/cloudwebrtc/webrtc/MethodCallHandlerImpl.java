@@ -121,11 +121,11 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
     }
 
 
-  static private void resultError(String method, String error, Result result) {
-    String errorMsg = method + "(): " + error;
-    result.error(method, errorMsg, null);
-    Log.d(TAG, errorMsg);
-  }
+    static private void resultError(String method, String error, Result result) {
+        String errorMsg = method + "(): " + error;
+        result.error(method, errorMsg, null);
+        Log.d(TAG, errorMsg);
+    }
 
     void dispose() {
         for (final MediaStream mediaStream : localStreams.values()) {
@@ -149,24 +149,24 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
             return;
         }
 
-    PeerConnectionFactory.initialize(
-            InitializationOptions.builder(context)
-                    .setEnableInternalTracer(true)
-                    .createInitializationOptions());
+        PeerConnectionFactory.initialize(
+                InitializationOptions.builder(context)
+                        .setEnableInternalTracer(true)
+                        .createInitializationOptions());
 
         getUserMediaImpl = new GetUserMediaImpl(this, context, this);
 
-    frameCryptor = new FlutterRTCFrameCryptor(this);
+        frameCryptor = new FlutterRTCFrameCryptor(this);
 
 
-    final Options options = new Options();
-    options.networkIgnoreMask = networkIgnoreMask;
+        final Options options = new Options();
+        options.networkIgnoreMask = networkIgnoreMask;
 
-    final PeerConnectionFactory.Builder factoryBuilder = PeerConnectionFactory.builder()
-            .setOptions(options);
+        final PeerConnectionFactory.Builder factoryBuilder = PeerConnectionFactory.builder()
+                .setOptions(options);
 
-    // Initialize EGL contexts required for HW acceleration.
-    EglBase.Context eglContext = EglUtils.getRootEglBaseContext();
+        // Initialize EGL contexts required for HW acceleration.
+        EglBase.Context eglContext = EglUtils.getRootEglBaseContext();
 
         CustomVideoEncoderFactory videoEncoderFactory = new CustomVideoEncoderFactory(eglContext, true, true);
         CustomVideoDecoderFactory videoDecoderFactory = new CustomVideoDecoderFactory(eglContext);
@@ -181,8 +181,8 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
         mFactory = factoryBuilder.createPeerConnectionFactory();
     }
 
-  @Override
-  public void onMethodCall(MethodCall call, @NonNull Result notSafeResult) {
+    @Override
+    public void onMethodCall(MethodCall call, @NonNull Result notSafeResult) {
 
         final AnyThreadResult result = new AnyThreadResult(notSafeResult);
         final String method = call.method;
@@ -220,25 +220,25 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
                             }
                         }
 
-          }
-        }
-        boolean forceSWCodec = false;
-        if (constraintsMap.hasKey("forceSWCodec")
-                && constraintsMap.getType("forceSWCodec") == ObjectType.Boolean) {
-          final boolean v = constraintsMap.getBoolean("forceSWCodec");
-          forceSWCodec = v;
-        }
-        List<String> forceSWCodecList = new ArrayList<>();
-        if(constraintsMap.hasKey("forceSWCodecList")
-                && constraintsMap.getType("forceSWCodecList") == ObjectType.Array) {
-          final List<Object> array = constraintsMap.getListArray("forceSWCodecList");
-          for(Object v : array) {
-            forceSWCodecList.add(v.toString());
-          }
-        } else {
-          // disable HW Codec for VP9 by default.
-          forceSWCodecList.add("VP9");
-        }
+                    }
+                }
+                boolean forceSWCodec = false;
+                if (constraintsMap.hasKey("forceSWCodec")
+                        && constraintsMap.getType("forceSWCodec") == ObjectType.Boolean) {
+                    final boolean v = constraintsMap.getBoolean("forceSWCodec");
+                    forceSWCodec = v;
+                }
+                List<String> forceSWCodecList = new ArrayList<>();
+                if (constraintsMap.hasKey("forceSWCodecList")
+                        && constraintsMap.getType("forceSWCodecList") == ObjectType.Array) {
+                    final List<Object> array = constraintsMap.getListArray("forceSWCodecList");
+                    for (Object v : array) {
+                        forceSWCodecList.add(v.toString());
+                    }
+                } else {
+                    // disable HW Codec for VP9 by default.
+                    forceSWCodecList.add("VP9");
+                }
 
                 initialize(networkIgnoreMask, forceSWCodec, forceSWCodecList);
                 result.success(null);
@@ -466,14 +466,14 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
                 FlutterRTCVideoRenderer render = new FlutterRTCVideoRenderer(surfaceTexture, entry);
                 renders.put(entry.id(), render);
 
-        EventChannel eventChannel =
-                new EventChannel(
-                        messenger,
-                        "FlutterWebRTC/Texture" + entry.id());
+                EventChannel eventChannel =
+                        new EventChannel(
+                                messenger,
+                                "FlutterWebRTC/Texture" + entry.id());
 
-        eventChannel.setStreamHandler(render);
-        render.setEventChannel(eventChannel);
-        render.setId((int) entry.id());
+                eventChannel.setStreamHandler(render);
+                render.setEventChannel(eventChannel);
+                render.setId((int) entry.id());
 
                 ConstraintsMap params = new ConstraintsMap();
                 params.putInt("textureId", (int) entry.id());
@@ -904,413 +904,413 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
         return capabilitiesMap;
     }
 
-  private PeerConnection getPeerConnection(String id) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
-    return (pco == null) ? null : pco.getPeerConnection();
-  }
+    private PeerConnection getPeerConnection(String id) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+        return (pco == null) ? null : pco.getPeerConnection();
+    }
 
-  private List<IceServer> createIceServers(ConstraintsArray iceServersArray) {
-    final int size = (iceServersArray == null) ? 0 : iceServersArray.size();
-    List<IceServer> iceServers = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      ConstraintsMap iceServerMap = iceServersArray.getMap(i);
-      boolean hasUsernameAndCredential =
-              iceServerMap.hasKey("username") && iceServerMap.hasKey("credential");
-      if (iceServerMap.hasKey("url")) {
-        if (hasUsernameAndCredential) {
-          iceServers.add(IceServer.builder(iceServerMap.getString("url"))
-                  .setUsername(iceServerMap.getString("username"))
-                  .setPassword(iceServerMap.getString("credential")).createIceServer());
-        } else {
-          iceServers.add(
-                  IceServer.builder(iceServerMap.getString("url")).createIceServer());
-        }
-      } else if (iceServerMap.hasKey("urls")) {
-        switch (iceServerMap.getType("urls")) {
-          case String:
-            if (hasUsernameAndCredential) {
-              iceServers.add(IceServer.builder(iceServerMap.getString("urls"))
-                      .setUsername(iceServerMap.getString("username"))
-                      .setPassword(iceServerMap.getString("credential")).createIceServer());
-            } else {
-              iceServers.add(IceServer.builder(iceServerMap.getString("urls"))
-                      .createIceServer());
+    private List<IceServer> createIceServers(ConstraintsArray iceServersArray) {
+        final int size = (iceServersArray == null) ? 0 : iceServersArray.size();
+        List<IceServer> iceServers = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            ConstraintsMap iceServerMap = iceServersArray.getMap(i);
+            boolean hasUsernameAndCredential =
+                    iceServerMap.hasKey("username") && iceServerMap.hasKey("credential");
+            if (iceServerMap.hasKey("url")) {
+                if (hasUsernameAndCredential) {
+                    iceServers.add(IceServer.builder(iceServerMap.getString("url"))
+                            .setUsername(iceServerMap.getString("username"))
+                            .setPassword(iceServerMap.getString("credential")).createIceServer());
+                } else {
+                    iceServers.add(
+                            IceServer.builder(iceServerMap.getString("url")).createIceServer());
+                }
+            } else if (iceServerMap.hasKey("urls")) {
+                switch (iceServerMap.getType("urls")) {
+                    case String:
+                        if (hasUsernameAndCredential) {
+                            iceServers.add(IceServer.builder(iceServerMap.getString("urls"))
+                                    .setUsername(iceServerMap.getString("username"))
+                                    .setPassword(iceServerMap.getString("credential")).createIceServer());
+                        } else {
+                            iceServers.add(IceServer.builder(iceServerMap.getString("urls"))
+                                    .createIceServer());
+                        }
+                        break;
+                    case Array:
+                        ConstraintsArray urls = iceServerMap.getArray("urls");
+                        List<String> urlsList = new ArrayList<>();
+
+                        for (int j = 0; j < urls.size(); j++) {
+                            urlsList.add(urls.getString(j));
+                        }
+
+                        Builder builder = IceServer.builder(urlsList);
+
+                        if (hasUsernameAndCredential) {
+                            builder
+                                    .setUsername(iceServerMap.getString("username"))
+                                    .setPassword(iceServerMap.getString("credential"));
+                        }
+
+                        iceServers.add(builder.createIceServer());
+
+                        break;
+                }
             }
-            break;
-          case Array:
-            ConstraintsArray urls = iceServerMap.getArray("urls");
-            List<String> urlsList = new ArrayList<>();
+        }
+        return iceServers;
+    }
 
-            for (int j = 0; j < urls.size(); j++) {
-              urlsList.add(urls.getString(j));
+    private RTCConfiguration parseRTCConfiguration(ConstraintsMap map) {
+        ConstraintsArray iceServersArray = null;
+        if (map != null) {
+            iceServersArray = map.getArray("iceServers");
+        }
+        List<IceServer> iceServers = createIceServers(iceServersArray);
+        RTCConfiguration conf = new RTCConfiguration(iceServers);
+        if (map == null) {
+            return conf;
+        }
+
+        // iceTransportPolicy (public api)
+        if (map.hasKey("iceTransportPolicy")
+                && map.getType("iceTransportPolicy") == ObjectType.String) {
+            final String v = map.getString("iceTransportPolicy");
+            if (v != null) {
+                switch (v) {
+                    case "all": // public
+                        conf.iceTransportsType = IceTransportsType.ALL;
+                        break;
+                    case "relay": // public
+                        conf.iceTransportsType = IceTransportsType.RELAY;
+                        break;
+                    case "nohost":
+                        conf.iceTransportsType = IceTransportsType.NOHOST;
+                        break;
+                    case "none":
+                        conf.iceTransportsType = IceTransportsType.NONE;
+                        break;
+                }
             }
+        }
 
-            Builder builder = IceServer.builder(urlsList);
-
-            if (hasUsernameAndCredential) {
-              builder
-                      .setUsername(iceServerMap.getString("username"))
-                      .setPassword(iceServerMap.getString("credential"));
+        // bundlePolicy (public api)
+        if (map.hasKey("bundlePolicy")
+                && map.getType("bundlePolicy") == ObjectType.String) {
+            final String v = map.getString("bundlePolicy");
+            if (v != null) {
+                switch (v) {
+                    case "balanced": // public
+                        conf.bundlePolicy = BundlePolicy.BALANCED;
+                        break;
+                    case "max-compat": // public
+                        conf.bundlePolicy = BundlePolicy.MAXCOMPAT;
+                        break;
+                    case "max-bundle": // public
+                        conf.bundlePolicy = BundlePolicy.MAXBUNDLE;
+                        break;
+                }
             }
-
-            iceServers.add(builder.createIceServer());
-
-            break;
         }
-      }
-    }
-    return iceServers;
-  }
 
-  private RTCConfiguration parseRTCConfiguration(ConstraintsMap map) {
-    ConstraintsArray iceServersArray = null;
-    if (map != null) {
-      iceServersArray = map.getArray("iceServers");
-    }
-    List<IceServer> iceServers = createIceServers(iceServersArray);
-    RTCConfiguration conf = new RTCConfiguration(iceServers);
-    if (map == null) {
-      return conf;
-    }
-
-    // iceTransportPolicy (public api)
-    if (map.hasKey("iceTransportPolicy")
-            && map.getType("iceTransportPolicy") == ObjectType.String) {
-      final String v = map.getString("iceTransportPolicy");
-      if (v != null) {
-        switch (v) {
-          case "all": // public
-            conf.iceTransportsType = IceTransportsType.ALL;
-            break;
-          case "relay": // public
-            conf.iceTransportsType = IceTransportsType.RELAY;
-            break;
-          case "nohost":
-            conf.iceTransportsType = IceTransportsType.NOHOST;
-            break;
-          case "none":
-            conf.iceTransportsType = IceTransportsType.NONE;
-            break;
+        // rtcpMuxPolicy (public api)
+        if (map.hasKey("rtcpMuxPolicy")
+                && map.getType("rtcpMuxPolicy") == ObjectType.String) {
+            final String v = map.getString("rtcpMuxPolicy");
+            if (v != null) {
+                switch (v) {
+                    case "negotiate": // public
+                        conf.rtcpMuxPolicy = RtcpMuxPolicy.NEGOTIATE;
+                        break;
+                    case "require": // public
+                        conf.rtcpMuxPolicy = RtcpMuxPolicy.REQUIRE;
+                        break;
+                }
+            }
         }
-      }
-    }
 
-    // bundlePolicy (public api)
-    if (map.hasKey("bundlePolicy")
-            && map.getType("bundlePolicy") == ObjectType.String) {
-      final String v = map.getString("bundlePolicy");
-      if (v != null) {
-        switch (v) {
-          case "balanced": // public
-            conf.bundlePolicy = BundlePolicy.BALANCED;
-            break;
-          case "max-compat": // public
-            conf.bundlePolicy = BundlePolicy.MAXCOMPAT;
-            break;
-          case "max-bundle": // public
-            conf.bundlePolicy = BundlePolicy.MAXBUNDLE;
-            break;
+        // FIXME: peerIdentity of type DOMString (public api)
+        // FIXME: certificates of type sequence<RTCCertificate> (public api)
+
+        // iceCandidatePoolSize of type unsigned short, defaulting to 0
+        if (map.hasKey("iceCandidatePoolSize")
+                && map.getType("iceCandidatePoolSize") == ObjectType.Number) {
+            final int v = map.getInt("iceCandidatePoolSize");
+            if (v > 0) {
+                conf.iceCandidatePoolSize = v;
+            }
         }
-      }
-    }
 
-    // rtcpMuxPolicy (public api)
-    if (map.hasKey("rtcpMuxPolicy")
-            && map.getType("rtcpMuxPolicy") == ObjectType.String) {
-      final String v = map.getString("rtcpMuxPolicy");
-      if (v != null) {
-        switch (v) {
-          case "negotiate": // public
-            conf.rtcpMuxPolicy = RtcpMuxPolicy.NEGOTIATE;
-            break;
-          case "require": // public
-            conf.rtcpMuxPolicy = RtcpMuxPolicy.REQUIRE;
-            break;
+        // sdpSemantics
+        if (map.hasKey("sdpSemantics")
+                && map.getType("sdpSemantics") == ObjectType.String) {
+            final String v = map.getString("sdpSemantics");
+            if (v != null) {
+                switch (v) {
+                    case "plan-b":
+                        conf.sdpSemantics = SdpSemantics.PLAN_B;
+                        break;
+                    case "unified-plan":
+                        conf.sdpSemantics = SdpSemantics.UNIFIED_PLAN;
+                        break;
+                }
+            }
         }
-      }
-    }
 
-    // FIXME: peerIdentity of type DOMString (public api)
-    // FIXME: certificates of type sequence<RTCCertificate> (public api)
-
-    // iceCandidatePoolSize of type unsigned short, defaulting to 0
-    if (map.hasKey("iceCandidatePoolSize")
-            && map.getType("iceCandidatePoolSize") == ObjectType.Number) {
-      final int v = map.getInt("iceCandidatePoolSize");
-      if (v > 0) {
-        conf.iceCandidatePoolSize = v;
-      }
-    }
-
-    // sdpSemantics
-    if (map.hasKey("sdpSemantics")
-            && map.getType("sdpSemantics") == ObjectType.String) {
-      final String v = map.getString("sdpSemantics");
-      if (v != null) {
-        switch (v) {
-          case "plan-b":
-            conf.sdpSemantics = SdpSemantics.PLAN_B;
-            break;
-          case "unified-plan":
-            conf.sdpSemantics = SdpSemantics.UNIFIED_PLAN;
-            break;
+        // maxIPv6Networks
+        if (map.hasKey("maxIPv6Networks")
+                && map.getType("maxIPv6Networks") == ObjectType.Number) {
+            conf.maxIPv6Networks = map.getInt("maxIPv6Networks");
         }
-      }
-    }
 
-    // maxIPv6Networks
-    if (map.hasKey("maxIPv6Networks")
-            && map.getType("maxIPv6Networks") == ObjectType.Number) {
-      conf.maxIPv6Networks = map.getInt("maxIPv6Networks");
-    }
+        // === below is private api in webrtc ===
 
-    // === below is private api in webrtc ===
-
-    // tcpCandidatePolicy (private api)
-    if (map.hasKey("tcpCandidatePolicy")
-            && map.getType("tcpCandidatePolicy") == ObjectType.String) {
-      final String v = map.getString("tcpCandidatePolicy");
-      if (v != null) {
-        switch (v) {
-          case "enabled":
-            conf.tcpCandidatePolicy = TcpCandidatePolicy.ENABLED;
-            break;
-          case "disabled":
-            conf.tcpCandidatePolicy = TcpCandidatePolicy.DISABLED;
-            break;
+        // tcpCandidatePolicy (private api)
+        if (map.hasKey("tcpCandidatePolicy")
+                && map.getType("tcpCandidatePolicy") == ObjectType.String) {
+            final String v = map.getString("tcpCandidatePolicy");
+            if (v != null) {
+                switch (v) {
+                    case "enabled":
+                        conf.tcpCandidatePolicy = TcpCandidatePolicy.ENABLED;
+                        break;
+                    case "disabled":
+                        conf.tcpCandidatePolicy = TcpCandidatePolicy.DISABLED;
+                        break;
+                }
+            }
         }
-      }
-    }
 
-    // candidateNetworkPolicy (private api)
-    if (map.hasKey("candidateNetworkPolicy")
-            && map.getType("candidateNetworkPolicy") == ObjectType.String) {
-      final String v = map.getString("candidateNetworkPolicy");
-      if (v != null) {
-        switch (v) {
-          case "all":
-            conf.candidateNetworkPolicy = CandidateNetworkPolicy.ALL;
-            break;
-          case "low_cost":
-            conf.candidateNetworkPolicy = CandidateNetworkPolicy.LOW_COST;
-            break;
+        // candidateNetworkPolicy (private api)
+        if (map.hasKey("candidateNetworkPolicy")
+                && map.getType("candidateNetworkPolicy") == ObjectType.String) {
+            final String v = map.getString("candidateNetworkPolicy");
+            if (v != null) {
+                switch (v) {
+                    case "all":
+                        conf.candidateNetworkPolicy = CandidateNetworkPolicy.ALL;
+                        break;
+                    case "low_cost":
+                        conf.candidateNetworkPolicy = CandidateNetworkPolicy.LOW_COST;
+                        break;
+                }
+            }
         }
-      }
-    }
 
-    // KeyType (private api)
-    if (map.hasKey("keyType")
-            && map.getType("keyType") == ObjectType.String) {
-      final String v = map.getString("keyType");
-      if (v != null) {
-        switch (v) {
-          case "RSA":
-            conf.keyType = KeyType.RSA;
-            break;
-          case "ECDSA":
-            conf.keyType = KeyType.ECDSA;
-            break;
+        // KeyType (private api)
+        if (map.hasKey("keyType")
+                && map.getType("keyType") == ObjectType.String) {
+            final String v = map.getString("keyType");
+            if (v != null) {
+                switch (v) {
+                    case "RSA":
+                        conf.keyType = KeyType.RSA;
+                        break;
+                    case "ECDSA":
+                        conf.keyType = KeyType.ECDSA;
+                        break;
+                }
+            }
         }
-      }
-    }
 
-    // continualGatheringPolicy (private api)
-    if (map.hasKey("continualGatheringPolicy")
-            && map.getType("continualGatheringPolicy") == ObjectType.String) {
-      final String v = map.getString("continualGatheringPolicy");
-      if (v != null) {
-        switch (v) {
-          case "gather_once":
-            conf.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE;
-            break;
-          case "gather_continually":
-            conf.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_CONTINUALLY;
-            break;
+        // continualGatheringPolicy (private api)
+        if (map.hasKey("continualGatheringPolicy")
+                && map.getType("continualGatheringPolicy") == ObjectType.String) {
+            final String v = map.getString("continualGatheringPolicy");
+            if (v != null) {
+                switch (v) {
+                    case "gather_once":
+                        conf.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE;
+                        break;
+                    case "gather_continually":
+                        conf.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_CONTINUALLY;
+                        break;
+                }
+            }
         }
-      }
+
+        // audioJitterBufferMaxPackets (private api)
+        if (map.hasKey("audioJitterBufferMaxPackets")
+                && map.getType("audioJitterBufferMaxPackets") == ObjectType.Number) {
+            final int v = map.getInt("audioJitterBufferMaxPackets");
+            if (v > 0) {
+                conf.audioJitterBufferMaxPackets = v;
+            }
+        }
+
+        // iceConnectionReceivingTimeout (private api)
+        if (map.hasKey("iceConnectionReceivingTimeout")
+                && map.getType("iceConnectionReceivingTimeout") == ObjectType.Number) {
+            final int v = map.getInt("iceConnectionReceivingTimeout");
+            conf.iceConnectionReceivingTimeout = v;
+        }
+
+        // iceBackupCandidatePairPingInterval (private api)
+        if (map.hasKey("iceBackupCandidatePairPingInterval")
+                && map.getType("iceBackupCandidatePairPingInterval") == ObjectType.Number) {
+            final int v = map.getInt("iceBackupCandidatePairPingInterval");
+            conf.iceBackupCandidatePairPingInterval = v;
+        }
+
+        // audioJitterBufferFastAccelerate (private api)
+        if (map.hasKey("audioJitterBufferFastAccelerate")
+                && map.getType("audioJitterBufferFastAccelerate") == ObjectType.Boolean) {
+            final boolean v = map.getBoolean("audioJitterBufferFastAccelerate");
+            conf.audioJitterBufferFastAccelerate = v;
+        }
+
+        // pruneTurnPorts (private api)
+        if (map.hasKey("pruneTurnPorts")
+                && map.getType("pruneTurnPorts") == ObjectType.Boolean) {
+            final boolean v = map.getBoolean("pruneTurnPorts");
+            conf.pruneTurnPorts = v;
+        }
+
+        // presumeWritableWhenFullyRelayed (private api)
+        if (map.hasKey("presumeWritableWhenFullyRelayed")
+                && map.getType("presumeWritableWhenFullyRelayed") == ObjectType.Boolean) {
+            final boolean v = map.getBoolean("presumeWritableWhenFullyRelayed");
+            conf.presumeWritableWhenFullyRelayed = v;
+        }
+        // cryptoOptions
+        if (map.hasKey("cryptoOptions")
+                && map.getType("cryptoOptions") == ObjectType.Map) {
+            final ConstraintsMap cryptoOptions = map.getMap("cryptoOptions");
+            conf.cryptoOptions = CryptoOptions.builder()
+                    .setEnableGcmCryptoSuites(cryptoOptions.hasKey("enableGcmCryptoSuites") && cryptoOptions.getBoolean("enableGcmCryptoSuites"))
+                    .setRequireFrameEncryption(cryptoOptions.hasKey("requireFrameEncryption") && cryptoOptions.getBoolean("requireFrameEncryption"))
+                    .setEnableEncryptedRtpHeaderExtensions(cryptoOptions.hasKey("enableEncryptedRtpHeaderExtensions") && cryptoOptions.getBoolean("enableEncryptedRtpHeaderExtensions"))
+                    .setEnableAes128Sha1_32CryptoCipher(cryptoOptions.hasKey("enableAes128Sha1_32CryptoCipher") && cryptoOptions.getBoolean("enableAes128Sha1_32CryptoCipher"))
+                    .createCryptoOptions();
+        }
+        if (map.hasKey("enableCpuOveruseDetection")
+                && map.getType("enableCpuOveruseDetection") == ObjectType.Boolean) {
+            final boolean v = map.getBoolean("enableCpuOveruseDetection");
+            conf.enableCpuOveruseDetection = v;
+        }
+        return conf;
     }
 
-    // audioJitterBufferMaxPackets (private api)
-    if (map.hasKey("audioJitterBufferMaxPackets")
-            && map.getType("audioJitterBufferMaxPackets") == ObjectType.Number) {
-      final int v = map.getInt("audioJitterBufferMaxPackets");
-      if (v > 0) {
-        conf.audioJitterBufferMaxPackets = v;
-      }
+    public String peerConnectionInit(ConstraintsMap configuration, ConstraintsMap constraints) {
+        String peerConnectionId = getNextStreamUUID();
+        RTCConfiguration conf = parseRTCConfiguration(configuration);
+        PeerConnectionObserver observer = new PeerConnectionObserver(conf, this, messenger, peerConnectionId);
+        PeerConnection peerConnection
+                = mFactory.createPeerConnection(
+                conf,
+                parseMediaConstraints(constraints),
+                observer);
+        observer.setPeerConnection(peerConnection);
+        mPeerConnectionObservers.put(peerConnectionId, observer);
+        return peerConnectionId;
     }
 
-    // iceConnectionReceivingTimeout (private api)
-    if (map.hasKey("iceConnectionReceivingTimeout")
-            && map.getType("iceConnectionReceivingTimeout") == ObjectType.Number) {
-      final int v = map.getInt("iceConnectionReceivingTimeout");
-      conf.iceConnectionReceivingTimeout = v;
+    @Override
+    public boolean putLocalStream(String streamId, MediaStream stream) {
+        localStreams.put(streamId, stream);
+        return true;
     }
 
-    // iceBackupCandidatePairPingInterval (private api)
-    if (map.hasKey("iceBackupCandidatePairPingInterval")
-            && map.getType("iceBackupCandidatePairPingInterval") == ObjectType.Number) {
-      final int v = map.getInt("iceBackupCandidatePairPingInterval");
-      conf.iceBackupCandidatePairPingInterval = v;
+    @Override
+    public boolean putLocalTrack(String trackId, LocalTrack track) {
+        localTracks.put(trackId, track.track);
+        return true;
     }
-
-    // audioJitterBufferFastAccelerate (private api)
-    if (map.hasKey("audioJitterBufferFastAccelerate")
-            && map.getType("audioJitterBufferFastAccelerate") == ObjectType.Boolean) {
-      final boolean v = map.getBoolean("audioJitterBufferFastAccelerate");
-      conf.audioJitterBufferFastAccelerate = v;
-    }
-
-    // pruneTurnPorts (private api)
-    if (map.hasKey("pruneTurnPorts")
-            && map.getType("pruneTurnPorts") == ObjectType.Boolean) {
-      final boolean v = map.getBoolean("pruneTurnPorts");
-      conf.pruneTurnPorts = v;
-    }
-
-    // presumeWritableWhenFullyRelayed (private api)
-    if (map.hasKey("presumeWritableWhenFullyRelayed")
-            && map.getType("presumeWritableWhenFullyRelayed") == ObjectType.Boolean) {
-      final boolean v = map.getBoolean("presumeWritableWhenFullyRelayed");
-      conf.presumeWritableWhenFullyRelayed = v;
-    }
-    // cryptoOptions
-    if (map.hasKey("cryptoOptions")
-            && map.getType("cryptoOptions") == ObjectType.Map) {
-      final ConstraintsMap cryptoOptions = map.getMap("cryptoOptions");
-      conf.cryptoOptions = CryptoOptions.builder()
-              .setEnableGcmCryptoSuites(cryptoOptions.hasKey("enableGcmCryptoSuites") && cryptoOptions.getBoolean("enableGcmCryptoSuites"))
-              .setRequireFrameEncryption(cryptoOptions.hasKey("requireFrameEncryption") && cryptoOptions.getBoolean("requireFrameEncryption"))
-              .setEnableEncryptedRtpHeaderExtensions(cryptoOptions.hasKey("enableEncryptedRtpHeaderExtensions") && cryptoOptions.getBoolean("enableEncryptedRtpHeaderExtensions"))
-              .setEnableAes128Sha1_32CryptoCipher(cryptoOptions.hasKey("enableAes128Sha1_32CryptoCipher") && cryptoOptions.getBoolean("enableAes128Sha1_32CryptoCipher"))
-              .createCryptoOptions();
-    }
-    if (map.hasKey("enableCpuOveruseDetection")
-            && map.getType("enableCpuOveruseDetection") == ObjectType.Boolean) {
-      final boolean v = map.getBoolean("enableCpuOveruseDetection");
-      conf.enableCpuOveruseDetection = v;
-    }
-    return conf;
-  }
-
-  public String peerConnectionInit(ConstraintsMap configuration, ConstraintsMap constraints) {
-    String peerConnectionId = getNextStreamUUID();
-    RTCConfiguration conf = parseRTCConfiguration(configuration);
-    PeerConnectionObserver observer = new PeerConnectionObserver(conf, this, messenger, peerConnectionId);
-    PeerConnection peerConnection
-            = mFactory.createPeerConnection(
-            conf,
-            parseMediaConstraints(constraints),
-            observer);
-    observer.setPeerConnection(peerConnection);
-    mPeerConnectionObservers.put(peerConnectionId, observer);
-    return peerConnectionId;
-  }
-
-  @Override
-  public boolean putLocalStream(String streamId, MediaStream stream) {
-    localStreams.put(streamId, stream);
-    return true;
-  }
-
-  @Override
-  public boolean putLocalTrack(String trackId, LocalTrack track) {
-    localTracks.put(trackId, track);
-    return true;
-  }
 
     @Override
     public LocalTrack getLocalTrack(String trackId) {
         return new LocalTrack(localTracks.get(trackId));
     }
 
-  public MediaStreamTrack getRemoteTrack(String trackId) {
-    for (Entry<String, PeerConnectionObserver> entry : mPeerConnectionObservers.entrySet()) {
-      PeerConnectionObserver pco = entry.getValue();
-      MediaStreamTrack track = pco.remoteTracks.get(trackId);
-      if (track == null) {
-        track = pco.getTransceiversTrack(trackId);
-      }
-      if (track != null) {
-        return track;
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public String getNextStreamUUID() {
-    String uuid;
-
-    do {
-      uuid = UUID.randomUUID().toString();
-    } while (getStreamForId(uuid, "") != null);
-
-    return uuid;
-  }
-
-  @Override
-  public String getNextTrackUUID() {
-    String uuid;
-
-    do {
-      uuid = UUID.randomUUID().toString();
-    } while (getTrackForId(uuid, null) != null);
-
-    return uuid;
-  }
-
-  @Override
-  public PeerConnectionFactory getPeerConnectionFactory() {
-    return mFactory;
-  }
-
-  @Override
-  public PeerConnectionObserver getPeerConnectionObserver(String peerConnectionId) {
-    return mPeerConnectionObservers.get(peerConnectionId);
-  }
-
-  @Nullable
-  @Override
-  public Activity getActivity() {
-    return activity;
-  }
-
-  @Nullable
-  @Override
-  public Context getApplicationContext() {
-    return context;
-  }
-
-  @Override
-  public BinaryMessenger getMessenger() {
-    return messenger;
-  }
-
-  MediaStream getStreamForId(String id, String peerConnectionId) {
-    MediaStream stream = null;
-    if (peerConnectionId.length() > 0) {
-      PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-      if (pco != null) {
-        stream = pco.remoteStreams.get(id);
-      }
-    } else {
-      for (Entry<String, PeerConnectionObserver> entry : mPeerConnectionObservers
-              .entrySet()) {
-        PeerConnectionObserver pco = entry.getValue();
-        stream = pco.remoteStreams.get(id);
-        if (stream != null) {
-          break;
+    public MediaStreamTrack getRemoteTrack(String trackId) {
+        for (Entry<String, PeerConnectionObserver> entry : mPeerConnectionObservers.entrySet()) {
+            PeerConnectionObserver pco = entry.getValue();
+            MediaStreamTrack track = pco.remoteTracks.get(trackId);
+            if (track == null) {
+                track = pco.getTransceiversTrack(trackId);
+            }
+            if (track != null) {
+                return track;
+            }
         }
-      }
-    }
-    if (stream == null) {
-      stream = localStreams.get(id);
+        return null;
     }
 
-    return stream;
-  }
+    @Override
+    public String getNextStreamUUID() {
+        String uuid;
 
-     MediaStreamTrack getTrackForId(String trackId, String peerConnectionId) {
+        do {
+            uuid = UUID.randomUUID().toString();
+        } while (getStreamForId(uuid, "") != null);
+
+        return uuid;
+    }
+
+    @Override
+    public String getNextTrackUUID() {
+        String uuid;
+
+        do {
+            uuid = UUID.randomUUID().toString();
+        } while (getTrackForId(uuid, null) != null);
+
+        return uuid;
+    }
+
+    @Override
+    public PeerConnectionFactory getPeerConnectionFactory() {
+        return mFactory;
+    }
+
+    @Override
+    public PeerConnectionObserver getPeerConnectionObserver(String peerConnectionId) {
+        return mPeerConnectionObservers.get(peerConnectionId);
+    }
+
+    @Nullable
+    @Override
+    public Activity getActivity() {
+        return activity;
+    }
+
+    @Nullable
+    @Override
+    public Context getApplicationContext() {
+        return context;
+    }
+
+    @Override
+    public BinaryMessenger getMessenger() {
+        return messenger;
+    }
+
+    MediaStream getStreamForId(String id, String peerConnectionId) {
+        MediaStream stream = null;
+        if (peerConnectionId.length() > 0) {
+            PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+            if (pco != null) {
+                stream = pco.remoteStreams.get(id);
+            }
+        } else {
+            for (Entry<String, PeerConnectionObserver> entry : mPeerConnectionObservers
+                    .entrySet()) {
+                PeerConnectionObserver pco = entry.getValue();
+                stream = pco.remoteStreams.get(id);
+                if (stream != null) {
+                    break;
+                }
+            }
+        }
+        if (stream == null) {
+            stream = localStreams.get(id);
+        }
+
+        return stream;
+    }
+
+    MediaStreamTrack getTrackForId(String trackId, String peerConnectionId) {
         MediaStreamTrack track = localTracks.get(trackId);
 
         if (track == null) {
@@ -1335,104 +1335,104 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
     }
 
 
-  public void getUserMedia(ConstraintsMap constraints, Result result) {
-    String streamId = getNextStreamUUID();
-    MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
+    public void getUserMedia(ConstraintsMap constraints, Result result) {
+        String streamId = getNextStreamUUID();
+        MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
 
-    if (mediaStream == null) {
-      // XXX The following does not follow the getUserMedia() algorithm
-      // specified by
-      // https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia
-      // with respect to distinguishing the various causes of failure.
-      resultError("getUserMediaFailed", "Failed to create new media stream", result);
-      return;
+        if (mediaStream == null) {
+            // XXX The following does not follow the getUserMedia() algorithm
+            // specified by
+            // https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia
+            // with respect to distinguishing the various causes of failure.
+            resultError("getUserMediaFailed", "Failed to create new media stream", result);
+            return;
+        }
+
+        getUserMediaImpl.getUserMedia(constraints, result, mediaStream);
     }
 
-    getUserMediaImpl.getUserMedia(constraints, result, mediaStream);
-  }
+    public void getDisplayMedia(ConstraintsMap constraints, Result result) {
+        String streamId = getNextStreamUUID();
+        MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
 
-  public void getDisplayMedia(ConstraintsMap constraints, Result result) {
-    String streamId = getNextStreamUUID();
-    MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
-
-    if (mediaStream == null) {
-      // XXX The following does not follow the getUserMedia() algorithm
-      // specified by
-      // https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia
-      // with respect to distinguishing the various causes of failure.
-      resultError("getDisplayMedia", "Failed to create new media stream", result);
-      return;
-    }
+        if (mediaStream == null) {
+            // XXX The following does not follow the getUserMedia() algorithm
+            // specified by
+            // https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia
+            // with respect to distinguishing the various causes of failure.
+            resultError("getDisplayMedia", "Failed to create new media stream", result);
+            return;
+        }
 
         getUserMediaImpl.getDisplayMedia(result, mediaStream);
     }
 
-  public void getSources(Result result) {
-    ConstraintsArray array = new ConstraintsArray();
-    String[] names = new String[Camera.getNumberOfCameras()];
+    public void getSources(Result result) {
+        ConstraintsArray array = new ConstraintsArray();
+        String[] names = new String[Camera.getNumberOfCameras()];
 
-    for (int i = 0; i < Camera.getNumberOfCameras(); ++i) {
-      ConstraintsMap info = getCameraInfo(i);
-      if (info != null) {
-        array.pushMap(info);
-      }
-    }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      ConstraintsMap audio = new ConstraintsMap();
-      audio.putString("label", "Audio");
-      audio.putString("deviceId", "audio-1");
-      audio.putString("kind", "audioinput");
-      audio.putString("groupId", "microphone");
-      array.pushMap(audio);
-    } else {
-      android.media.AudioManager audioManager = ((android.media.AudioManager) context
-              .getSystemService(Context.AUDIO_SERVICE));
-      final AudioDeviceInfo[] devices = audioManager.getDevices(android.media.AudioManager.GET_DEVICES_INPUTS);
-      for (int i = 0; i < devices.length; i++) {
-        AudioDeviceInfo device = devices[i];
-        if (device.getType() == AudioDeviceInfo.TYPE_BUILTIN_MIC || device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
-                device.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-          ConstraintsMap audio = new ConstraintsMap();
-          audio.putString("label", AudioUtils.getAudioDeviceLabel(device));
-          audio.putString("deviceId", AudioUtils.getAudioDeviceId(device));
-          audio.putString("groupId", AudioUtils.getAudioGroupId(device));
-          audio.putString("kind", "audioinput");
-          array.pushMap(audio);
+        for (int i = 0; i < Camera.getNumberOfCameras(); ++i) {
+            ConstraintsMap info = getCameraInfo(i);
+            if (info != null) {
+                array.pushMap(info);
+            }
         }
-      }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            ConstraintsMap audio = new ConstraintsMap();
+            audio.putString("label", "Audio");
+            audio.putString("deviceId", "audio-1");
+            audio.putString("kind", "audioinput");
+            audio.putString("groupId", "microphone");
+            array.pushMap(audio);
+        } else {
+            android.media.AudioManager audioManager = ((android.media.AudioManager) context
+                    .getSystemService(Context.AUDIO_SERVICE));
+            final AudioDeviceInfo[] devices = audioManager.getDevices(android.media.AudioManager.GET_DEVICES_INPUTS);
+            for (int i = 0; i < devices.length; i++) {
+                AudioDeviceInfo device = devices[i];
+                if (device.getType() == AudioDeviceInfo.TYPE_BUILTIN_MIC || device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+                        device.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+                    ConstraintsMap audio = new ConstraintsMap();
+                    audio.putString("label", AudioUtils.getAudioDeviceLabel(device));
+                    audio.putString("deviceId", AudioUtils.getAudioDeviceId(device));
+                    audio.putString("groupId", AudioUtils.getAudioGroupId(device));
+                    audio.putString("kind", "audioinput");
+                    array.pushMap(audio);
+                }
+            }
+        }
+
+        List<? extends AudioDevice> audioOutputs = AudioSwitchManager.instance.availableAudioDevices();
+
+        for (AudioDevice audioOutput : audioOutputs) {
+            ConstraintsMap audioOutputMap = new ConstraintsMap();
+            audioOutputMap.putString("label", audioOutput.getName());
+            audioOutputMap.putString("deviceId", AudioDeviceKind.fromAudioDevice(audioOutput).typeName);
+            audioOutputMap.putString("groupId", "" + AudioDeviceKind.fromAudioDevice(audioOutput).typeName);
+            audioOutputMap.putString("kind", "audiooutput");
+            array.pushMap(audioOutputMap);
+        }
+
+        ConstraintsMap map = new ConstraintsMap();
+        map.putArray("sources", array.toArrayList());
+
+        result.success(map.toMap());
     }
 
-    List<? extends AudioDevice> audioOutputs = AudioSwitchManager.instance.availableAudioDevices();
+    private void createLocalMediaStream(Result result) {
+        String streamId = getNextStreamUUID();
+        MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
+        localStreams.put(streamId, mediaStream);
 
-    for (AudioDevice audioOutput : audioOutputs) {
-      ConstraintsMap audioOutputMap = new ConstraintsMap();
-      audioOutputMap.putString("label", audioOutput.getName());
-      audioOutputMap.putString("deviceId", AudioDeviceKind.fromAudioDevice(audioOutput).typeName);
-      audioOutputMap.putString("groupId", "" + AudioDeviceKind.fromAudioDevice(audioOutput).typeName);
-      audioOutputMap.putString("kind", "audiooutput");
-      array.pushMap(audioOutputMap);
+        if (mediaStream == null) {
+            resultError("createLocalMediaStream", "Failed to create new media stream", result);
+            return;
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("streamId", mediaStream.getId());
+        result.success(resultMap);
     }
-
-    ConstraintsMap map = new ConstraintsMap();
-    map.putArray("sources", array.toArrayList());
-
-    result.success(map.toMap());
-  }
-
-  private void createLocalMediaStream(Result result) {
-    String streamId = getNextStreamUUID();
-    MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
-    localStreams.put(streamId, mediaStream);
-
-    if (mediaStream == null) {
-      resultError("createLocalMediaStream", "Failed to create new media stream", result);
-      return;
-    }
-    Map<String, Object> resultMap = new HashMap<>();
-    resultMap.put("streamId", mediaStream.getId());
-    result.success(resultMap);
-  }
 
     public void trackDispose(final String trackId) {
         MediaStreamTrack track = localTracks.get(trackId);
@@ -1448,54 +1448,54 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
         localTracks.remove(trackId);
     }
 
-  public void mediaStreamTrackSetEnabled(final String id, final boolean enabled, String peerConnectionId) {
-    MediaStreamTrack track = getTrackForId(id, peerConnectionId);
+    public void mediaStreamTrackSetEnabled(final String id, final boolean enabled, String peerConnectionId) {
+        MediaStreamTrack track = getTrackForId(id, peerConnectionId);
 
-    if (track == null) {
-      Log.d(TAG, "mediaStreamTrackSetEnabled() track is null");
-      return;
-    } else if (track.enabled() == enabled) {
-      return;
-    }
-    track.setEnabled(enabled);
-  }
-
-  public void mediaStreamTrackSetVolume(final String id, final double volume, String peerConnectionId) {
-    MediaStreamTrack track = getTrackForId(id, null);
-    if (track instanceof AudioTrack) {
-      Log.d(TAG, "setVolume(): " + id + "," + volume);
-      try {
-        ((AudioTrack) track).setVolume(volume);
-      } catch (Exception e) {
-        Log.e(TAG, "setVolume(): error", e);
-      }
-    } else {
-      Log.w(TAG, "setVolume(): track not found: " + id);
-    }
-  }
-
-  public void mediaStreamAddTrack(final String streamId, final String trackId, Result result) {
-    MediaStream mediaStream = localStreams.get(streamId);
-    if (mediaStream != null) {
-      MediaStreamTrack track = getTrackForId(trackId, null);//localTracks.get(trackId);
-      if (track != null) {
-        String kind = track.kind();
-        if (kind.equals("audio")) {
-          mediaStream.addTrack((AudioTrack) track);
-          result.success(null);
-        } else if (kind.equals("video")) {
-          mediaStream.addTrack((VideoTrack) track);
-          result.success(null);
-        } else {
-          resultError("mediaStreamAddTrack", "mediaStreamAddTrack() track [" + trackId + "] has unsupported type: " + kind, result);
+        if (track == null) {
+            Log.d(TAG, "mediaStreamTrackSetEnabled() track is null");
+            return;
+        } else if (track.enabled() == enabled) {
+            return;
         }
-      } else {
-        resultError("mediaStreamAddTrack", "mediaStreamAddTrack() track [" + trackId + "] is null", result);
-      }
-    } else {
-      resultError("mediaStreamAddTrack", "mediaStreamAddTrack() stream [" + streamId + "] is null", result);
+        track.setEnabled(enabled);
     }
-  }
+
+    public void mediaStreamTrackSetVolume(final String id, final double volume, String peerConnectionId) {
+        MediaStreamTrack track = getTrackForId(id, null);
+        if (track instanceof AudioTrack) {
+            Log.d(TAG, "setVolume(): " + id + "," + volume);
+            try {
+                ((AudioTrack) track).setVolume(volume);
+            } catch (Exception e) {
+                Log.e(TAG, "setVolume(): error", e);
+            }
+        } else {
+            Log.w(TAG, "setVolume(): track not found: " + id);
+        }
+    }
+
+    public void mediaStreamAddTrack(final String streamId, final String trackId, Result result) {
+        MediaStream mediaStream = localStreams.get(streamId);
+        if (mediaStream != null) {
+            MediaStreamTrack track = getTrackForId(trackId, null);//localTracks.get(trackId);
+            if (track != null) {
+                String kind = track.kind();
+                if (kind.equals("audio")) {
+                    mediaStream.addTrack((AudioTrack) track);
+                    result.success(null);
+                } else if (kind.equals("video")) {
+                    mediaStream.addTrack((VideoTrack) track);
+                    result.success(null);
+                } else {
+                    resultError("mediaStreamAddTrack", "mediaStreamAddTrack() track [" + trackId + "] has unsupported type: " + kind, result);
+                }
+            } else {
+                resultError("mediaStreamAddTrack", "mediaStreamAddTrack() track [" + trackId + "] is null", result);
+            }
+        } else {
+            resultError("mediaStreamAddTrack", "mediaStreamAddTrack() stream [" + streamId + "] is null", result);
+        }
+    }
 
     public void mediaStreamRemoveTrack(final String streamId, final String trackId, Result result) {
         MediaStream mediaStream = localStreams.get(streamId);
@@ -1561,349 +1561,349 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
         return params;
     }
 
-  private MediaConstraints defaultConstraints() {
-    MediaConstraints constraints = new MediaConstraints();
-    // TODO video media
-    constraints.mandatory.add(new KeyValuePair("OfferToReceiveAudio", "true"));
-    constraints.mandatory.add(new KeyValuePair("OfferToReceiveVideo", "true"));
-    constraints.optional.add(new KeyValuePair("DtlsSrtpKeyAgreement", "true"));
-    return constraints;
-  }
-
-  public void peerConnectionSetConfiguration(ConstraintsMap configuration,
-                                             PeerConnection peerConnection) {
-    if (peerConnection == null) {
-      Log.d(TAG, "peerConnectionSetConfiguration() peerConnection is null");
-      return;
+    private MediaConstraints defaultConstraints() {
+        MediaConstraints constraints = new MediaConstraints();
+        // TODO video media
+        constraints.mandatory.add(new KeyValuePair("OfferToReceiveAudio", "true"));
+        constraints.mandatory.add(new KeyValuePair("OfferToReceiveVideo", "true"));
+        constraints.optional.add(new KeyValuePair("DtlsSrtpKeyAgreement", "true"));
+        return constraints;
     }
-    peerConnection.setConfiguration(parseRTCConfiguration(configuration));
-  }
 
-  public void peerConnectionAddStream(final String streamId, final String id, Result result) {
-    MediaStream mediaStream = localStreams.get(streamId);
-    if (mediaStream == null) {
-      Log.d(TAG, "peerConnectionAddStream() mediaStream is null");
-      return;
-    }
-    PeerConnection peerConnection = getPeerConnection(id);
-    if (peerConnection != null) {
-      boolean res = peerConnection.addStream(mediaStream);
-      Log.d(TAG, "addStream" + result);
-      result.success(res);
-    } else {
-      resultError("peerConnectionAddStream", "peerConnection is null", result);
-    }
-  }
-
-  public void peerConnectionRemoveStream(final String streamId, final String id, Result result) {
-    MediaStream mediaStream = localStreams.get(streamId);
-    if (mediaStream == null) {
-      Log.d(TAG, "peerConnectionRemoveStream() mediaStream is null");
-      return;
-    }
-    PeerConnection peerConnection = getPeerConnection(id);
-    if (peerConnection != null) {
-      peerConnection.removeStream(mediaStream);
-      result.success(null);
-    } else {
-      resultError("peerConnectionRemoveStream", "peerConnection is null", result);
-    }
-  }
-
-  public void peerConnectionCreateOffer(
-          String id,
-          ConstraintsMap constraints,
-          final Result result) {
-    PeerConnection peerConnection = getPeerConnection(id);
-
-    if (peerConnection != null) {
-      peerConnection.createOffer(new SdpObserver() {
-        @Override
-        public void onCreateFailure(String s) {
-          resultError("peerConnectionCreateOffer", "WEBRTC_CREATE_OFFER_ERROR: " + s, result);
+    public void peerConnectionSetConfiguration(ConstraintsMap configuration,
+                                               PeerConnection peerConnection) {
+        if (peerConnection == null) {
+            Log.d(TAG, "peerConnectionSetConfiguration() peerConnection is null");
+            return;
         }
+        peerConnection.setConfiguration(parseRTCConfiguration(configuration));
+    }
 
-        @Override
-        public void onCreateSuccess(final SessionDescription sdp) {
-          ConstraintsMap params = new ConstraintsMap();
-          params.putString("sdp", sdp.description);
-          params.putString("type", sdp.type.canonicalForm());
-          result.success(params.toMap());
+    public void peerConnectionAddStream(final String streamId, final String id, Result result) {
+        MediaStream mediaStream = localStreams.get(streamId);
+        if (mediaStream == null) {
+            Log.d(TAG, "peerConnectionAddStream() mediaStream is null");
+            return;
         }
-
-        @Override
-        public void onSetFailure(String s) {
+        PeerConnection peerConnection = getPeerConnection(id);
+        if (peerConnection != null) {
+            boolean res = peerConnection.addStream(mediaStream);
+            Log.d(TAG, "addStream" + result);
+            result.success(res);
+        } else {
+            resultError("peerConnectionAddStream", "peerConnection is null", result);
         }
+    }
 
-        @Override
-        public void onSetSuccess() {
+    public void peerConnectionRemoveStream(final String streamId, final String id, Result result) {
+        MediaStream mediaStream = localStreams.get(streamId);
+        if (mediaStream == null) {
+            Log.d(TAG, "peerConnectionRemoveStream() mediaStream is null");
+            return;
         }
-      }, parseMediaConstraints(constraints));
-    } else {
-      resultError("peerConnectionCreateOffer", "WEBRTC_CREATE_OFFER_ERROR", result);
-    }
-  }
-
-  public void peerConnectionCreateAnswer(
-          String id,
-          ConstraintsMap constraints,
-          final Result result) {
-    PeerConnection peerConnection = getPeerConnection(id);
-
-    if (peerConnection != null) {
-      peerConnection.createAnswer(new SdpObserver() {
-        @Override
-        public void onCreateFailure(String s) {
-          resultError("peerConnectionCreateAnswer", "WEBRTC_CREATE_ANSWER_ERROR: " + s, result);
+        PeerConnection peerConnection = getPeerConnection(id);
+        if (peerConnection != null) {
+            peerConnection.removeStream(mediaStream);
+            result.success(null);
+        } else {
+            resultError("peerConnectionRemoveStream", "peerConnection is null", result);
         }
+    }
 
-        @Override
-        public void onCreateSuccess(final SessionDescription sdp) {
-          ConstraintsMap params = new ConstraintsMap();
-          params.putString("sdp", sdp.description);
-          params.putString("type", sdp.type.canonicalForm());
-          result.success(params.toMap());
+    public void peerConnectionCreateOffer(
+            String id,
+            ConstraintsMap constraints,
+            final Result result) {
+        PeerConnection peerConnection = getPeerConnection(id);
+
+        if (peerConnection != null) {
+            peerConnection.createOffer(new SdpObserver() {
+                @Override
+                public void onCreateFailure(String s) {
+                    resultError("peerConnectionCreateOffer", "WEBRTC_CREATE_OFFER_ERROR: " + s, result);
+                }
+
+                @Override
+                public void onCreateSuccess(final SessionDescription sdp) {
+                    ConstraintsMap params = new ConstraintsMap();
+                    params.putString("sdp", sdp.description);
+                    params.putString("type", sdp.type.canonicalForm());
+                    result.success(params.toMap());
+                }
+
+                @Override
+                public void onSetFailure(String s) {
+                }
+
+                @Override
+                public void onSetSuccess() {
+                }
+            }, parseMediaConstraints(constraints));
+        } else {
+            resultError("peerConnectionCreateOffer", "WEBRTC_CREATE_OFFER_ERROR", result);
         }
+    }
 
-        @Override
-        public void onSetFailure(String s) {
+    public void peerConnectionCreateAnswer(
+            String id,
+            ConstraintsMap constraints,
+            final Result result) {
+        PeerConnection peerConnection = getPeerConnection(id);
+
+        if (peerConnection != null) {
+            peerConnection.createAnswer(new SdpObserver() {
+                @Override
+                public void onCreateFailure(String s) {
+                    resultError("peerConnectionCreateAnswer", "WEBRTC_CREATE_ANSWER_ERROR: " + s, result);
+                }
+
+                @Override
+                public void onCreateSuccess(final SessionDescription sdp) {
+                    ConstraintsMap params = new ConstraintsMap();
+                    params.putString("sdp", sdp.description);
+                    params.putString("type", sdp.type.canonicalForm());
+                    result.success(params.toMap());
+                }
+
+                @Override
+                public void onSetFailure(String s) {
+                }
+
+                @Override
+                public void onSetSuccess() {
+                }
+            }, parseMediaConstraints(constraints));
+        } else {
+            resultError("peerConnectionCreateAnswer", "peerConnection is null", result);
         }
+    }
 
-        @Override
-        public void onSetSuccess() {
+    public void peerConnectionSetLocalDescription(ConstraintsMap sdpMap, final String id,
+                                                  final Result result) {
+        PeerConnection peerConnection = getPeerConnection(id);
+        if (peerConnection != null) {
+            SessionDescription sdp = new SessionDescription(
+                    Type.fromCanonicalForm(sdpMap.getString("type")),
+                    sdpMap.getString("sdp")
+            );
+
+            peerConnection.setLocalDescription(new SdpObserver() {
+                @Override
+                public void onCreateSuccess(final SessionDescription sdp) {
+                }
+
+                @Override
+                public void onSetSuccess() {
+                    result.success(null);
+                }
+
+                @Override
+                public void onCreateFailure(String s) {
+                }
+
+                @Override
+                public void onSetFailure(String s) {
+                    resultError("peerConnectionSetLocalDescription", "WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: " + s, result);
+                }
+            }, sdp);
+        } else {
+            resultError("peerConnectionSetLocalDescription", "WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: peerConnection is null", result);
         }
-      }, parseMediaConstraints(constraints));
-    } else {
-      resultError("peerConnectionCreateAnswer", "peerConnection is null", result);
     }
-  }
 
-  public void peerConnectionSetLocalDescription(ConstraintsMap sdpMap, final String id,
-                                                final Result result) {
-    PeerConnection peerConnection = getPeerConnection(id);
-    if (peerConnection != null) {
-      SessionDescription sdp = new SessionDescription(
-              Type.fromCanonicalForm(sdpMap.getString("type")),
-              sdpMap.getString("sdp")
-      );
+    public void peerConnectionSetRemoteDescription(final ConstraintsMap sdpMap, final String id,
+                                                   final Result result) {
+        PeerConnection peerConnection = getPeerConnection(id);
+        if (peerConnection != null) {
+            SessionDescription sdp = new SessionDescription(
+                    Type.fromCanonicalForm(sdpMap.getString("type")),
+                    sdpMap.getString("sdp")
+            );
 
-      peerConnection.setLocalDescription(new SdpObserver() {
-        @Override
-        public void onCreateSuccess(final SessionDescription sdp) {
+            peerConnection.setRemoteDescription(new SdpObserver() {
+                @Override
+                public void onCreateSuccess(final SessionDescription sdp) {
+                }
+
+                @Override
+                public void onSetSuccess() {
+                    result.success(null);
+                }
+
+                @Override
+                public void onCreateFailure(String s) {
+                }
+
+                @Override
+                public void onSetFailure(String s) {
+                    resultError("peerConnectionSetRemoteDescription", "WEBRTC_SET_REMOTE_DESCRIPTION_ERROR: " + s, result);
+                }
+            }, sdp);
+        } else {
+            resultError("peerConnectionSetRemoteDescription", "WEBRTC_SET_REMOTE_DESCRIPTION_ERROR: peerConnection is null", result);
         }
+    }
 
-        @Override
-        public void onSetSuccess() {
-          result.success(null);
+    public void peerConnectionAddICECandidate(ConstraintsMap candidateMap, final String id,
+                                              final Result result) {
+        boolean res = false;
+        PeerConnection peerConnection = getPeerConnection(id);
+        if (peerConnection != null) {
+            int sdpMLineIndex = 0;
+            if (!candidateMap.isNull("sdpMLineIndex")) {
+                sdpMLineIndex = candidateMap.getInt("sdpMLineIndex");
+            }
+            IceCandidate candidate = new IceCandidate(
+                    candidateMap.getString("sdpMid"),
+                    sdpMLineIndex,
+                    candidateMap.getString("candidate"));
+            res = peerConnection.addIceCandidate(candidate);
+        } else {
+            resultError("peerConnectionAddICECandidate", "peerConnection is null", result);
         }
+        result.success(res);
+    }
 
-        @Override
-        public void onCreateFailure(String s) {
+    public void peerConnectionGetStats(String trackId, String id, final Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("peerConnectionGetStats", "peerConnection is null", result);
+        } else {
+            if (trackId == null || trackId.isEmpty()) {
+                pco.getStats(result);
+            } else {
+                pco.getStatsForTrack(trackId, result);
+            }
         }
+    }
 
-        @Override
-        public void onSetFailure(String s) {
-          resultError("peerConnectionSetLocalDescription", "WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: " + s, result);
+    public void restartIce(final String id) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+        if (pco == null || pco.getPeerConnection() == null) {
+            Log.d(TAG, "restartIce() peerConnection is null");
+        } else {
+            pco.restartIce();
         }
-      }, sdp);
-    } else {
-      resultError("peerConnectionSetLocalDescription", "WEBRTC_SET_LOCAL_DESCRIPTION_ERROR: peerConnection is null", result);
     }
-  }
 
-  public void peerConnectionSetRemoteDescription(final ConstraintsMap sdpMap, final String id,
-                                                 final Result result) {
-    PeerConnection peerConnection = getPeerConnection(id);
-    if (peerConnection != null) {
-      SessionDescription sdp = new SessionDescription(
-              Type.fromCanonicalForm(sdpMap.getString("type")),
-              sdpMap.getString("sdp")
-      );
-
-      peerConnection.setRemoteDescription(new SdpObserver() {
-        @Override
-        public void onCreateSuccess(final SessionDescription sdp) {
+    public void peerConnectionClose(final String id) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+        if (pco == null || pco.getPeerConnection() == null) {
+            Log.d(TAG, "peerConnectionClose() peerConnection is null");
+        } else {
+            pco.close();
         }
+    }
 
-        @Override
-        public void onSetSuccess() {
-          result.success(null);
+    public void peerConnectionDispose(final String id) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+        if (pco != null) {
+            if (peerConnectionDispose(pco)) {
+
+                mPeerConnectionObservers.remove(id);
+            }
+        } else {
+            Log.d(TAG, "peerConnectionDispose() peerConnectionObserver is null");
         }
-
-        @Override
-        public void onCreateFailure(String s) {
+        if (mPeerConnectionObservers.size() == 0) {
+            AudioSwitchManager.instance.stop();
         }
+    }
 
-        @Override
-        public void onSetFailure(String s) {
-          resultError("peerConnectionSetRemoteDescription", "WEBRTC_SET_REMOTE_DESCRIPTION_ERROR: " + s, result);
+    public boolean peerConnectionDispose(final PeerConnectionObserver pco) {
+        if (pco.getPeerConnection() == null) {
+            Log.d(TAG, "peerConnectionDispose() peerConnection is null");
+        } else {
+            pco.dispose();
+            return true;
         }
-      }, sdp);
-    } else {
-      resultError("peerConnectionSetRemoteDescription", "WEBRTC_SET_REMOTE_DESCRIPTION_ERROR: peerConnection is null", result);
+        return false;
     }
-  }
 
-  public void peerConnectionAddICECandidate(ConstraintsMap candidateMap, final String id,
-                                            final Result result) {
-    boolean res = false;
-    PeerConnection peerConnection = getPeerConnection(id);
-    if (peerConnection != null) {
-      int sdpMLineIndex = 0;
-      if (!candidateMap.isNull("sdpMLineIndex")) {
-        sdpMLineIndex = candidateMap.getInt("sdpMLineIndex");
-      }
-      IceCandidate candidate = new IceCandidate(
-          candidateMap.getString("sdpMid"),
-          sdpMLineIndex,
-          candidateMap.getString("candidate"));
-      res = peerConnection.addIceCandidate(candidate);
-    } else {
-      resultError("peerConnectionAddICECandidate", "peerConnection is null", result);
+    public void streamDispose(final String streamId) {
+        MediaStream stream = localStreams.get(streamId);
+        if (stream != null) {
+            streamDispose(stream);
+            localStreams.remove(streamId);
+            removeStreamForRendererById(streamId);
+        } else {
+            Log.d(TAG, "streamDispose() mediaStream is null");
+        }
     }
-    result.success(res);
-  }
 
-  public void peerConnectionGetStats(String trackId, String id, final Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("peerConnectionGetStats", "peerConnection is null", result);
-    } else {
-      if(trackId == null || trackId.isEmpty()) {
-        pco.getStats(result);
-      } else {
-        pco.getStatsForTrack(trackId, result);
-      }
+    public void streamDispose(final MediaStream stream) {
+        List<VideoTrack> videoTracks = stream.videoTracks;
+        for (VideoTrack track : videoTracks) {
+            localTracks.remove(track.id());
+            getUserMediaImpl.removeVideoCapturer(track.id());
+            stream.removeTrack(track);
+        }
+        List<AudioTrack> audioTracks = stream.audioTracks;
+        for (AudioTrack track : audioTracks) {
+            localTracks.remove(track.id());
+            stream.removeTrack(track);
+        }
     }
-  }
 
-  public void restartIce(final String id) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
-    if (pco == null || pco.getPeerConnection() == null) {
-      Log.d(TAG, "restartIce() peerConnection is null");
-    } else {
-      pco.restartIce();
+    private void removeStreamForRendererById(String streamId) {
+        for (int i = 0; i < renders.size(); i++) {
+            FlutterRTCVideoRenderer renderer = renders.valueAt(i);
+            if (renderer.checkMediaStream(streamId, "local")) {
+                renderer.setStream(null, "");
+            }
+        }
     }
-  }
 
-  public void peerConnectionClose(final String id) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
-    if (pco == null || pco.getPeerConnection() == null) {
-      Log.d(TAG, "peerConnectionClose() peerConnection is null");
-    } else {
-      pco.close();
+    private void removeTrackForRendererById(String trackId) {
+        for (int i = 0; i < renders.size(); i++) {
+            FlutterRTCVideoRenderer renderer = renders.valueAt(i);
+            if (renderer.checkVideoTrack(trackId, "local")) {
+                renderer.setStream(null, null);
+            }
+        }
     }
-  }
 
-  public void peerConnectionDispose(final String id) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
-    if (pco != null) {
-      if (peerConnectionDispose(pco)) {
+    public void createDataChannel(final String peerConnectionId, String label, ConstraintsMap config,
+                                  Result result) {
+        // Forward to PeerConnectionObserver which deals with DataChannels
+        // because DataChannel is owned by PeerConnection.
+        PeerConnectionObserver pco
+                = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            Log.d(TAG, "createDataChannel() peerConnection is null");
+        } else {
+            pco.createDataChannel(label, config, result);
+        }
+    }
 
-        mPeerConnectionObservers.remove(id);
-      }
-    } else {
-      Log.d(TAG, "peerConnectionDispose() peerConnectionObserver is null");
+    public void dataChannelSend(String peerConnectionId, String dataChannelId, ByteBuffer bytebuffer,
+                                Boolean isBinary) {
+        // Forward to PeerConnectionObserver which deals with DataChannels
+        // because DataChannel is owned by PeerConnection.
+        PeerConnectionObserver pco
+                = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            Log.d(TAG, "dataChannelSend() peerConnection is null");
+        } else {
+            pco.dataChannelSend(dataChannelId, bytebuffer, isBinary);
+        }
     }
-    if (mPeerConnectionObservers.size() == 0) {
-      AudioSwitchManager.instance.stop();
-    }
-  }
 
-  public boolean peerConnectionDispose(final PeerConnectionObserver pco) {
-    if (pco.getPeerConnection() == null) {
-      Log.d(TAG, "peerConnectionDispose() peerConnection is null");
-    } else {
-      pco.dispose();
-      return true;
+    public void dataChannelClose(String peerConnectionId, String dataChannelId) {
+        // Forward to PeerConnectionObserver which deals with DataChannels
+        // because DataChannel is owned by PeerConnection.
+        PeerConnectionObserver pco
+                = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            Log.d(TAG, "dataChannelClose() peerConnection is null");
+        } else {
+            pco.dataChannelClose(dataChannelId);
+        }
     }
-    return false;
-  }
 
-  public void streamDispose(final String streamId) {
-    MediaStream stream = localStreams.get(streamId);
-    if (stream != null) {
-      streamDispose(stream);
-      localStreams.remove(streamId);
-      removeStreamForRendererById(streamId);
-    } else {
-      Log.d(TAG, "streamDispose() mediaStream is null");
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
-  }
-
-  public void streamDispose(final MediaStream stream) {
-    List<VideoTrack> videoTracks = stream.videoTracks;
-    for (VideoTrack track : videoTracks) {
-      localTracks.remove(track.id());
-      getUserMediaImpl.removeVideoCapturer(track.id());
-      stream.removeTrack(track);
-    }
-    List<AudioTrack> audioTracks = stream.audioTracks;
-    for (AudioTrack track : audioTracks) {
-      localTracks.remove(track.id());
-      stream.removeTrack(track);
-    }
-  }
-
-  private void removeStreamForRendererById(String streamId) {
-    for (int i = 0; i < renders.size(); i++) {
-      FlutterRTCVideoRenderer renderer = renders.valueAt(i);
-      if (renderer.checkMediaStream(streamId, "local")) {
-        renderer.setStream(null, "");
-      }
-    }
-  }
-
-  private void removeTrackForRendererById(String trackId) {
-    for (int i = 0; i < renders.size(); i++) {
-      FlutterRTCVideoRenderer renderer = renders.valueAt(i);
-      if (renderer.checkVideoTrack(trackId, "local")) {
-        renderer.setStream(null, null);
-      }
-    }
-  }
-
-  public void createDataChannel(final String peerConnectionId, String label, ConstraintsMap config,
-                                Result result) {
-    // Forward to PeerConnectionObserver which deals with DataChannels
-    // because DataChannel is owned by PeerConnection.
-    PeerConnectionObserver pco
-            = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      Log.d(TAG, "createDataChannel() peerConnection is null");
-    } else {
-      pco.createDataChannel(label, config, result);
-    }
-  }
-
-  public void dataChannelSend(String peerConnectionId, String dataChannelId, ByteBuffer bytebuffer,
-                              Boolean isBinary) {
-    // Forward to PeerConnectionObserver which deals with DataChannels
-    // because DataChannel is owned by PeerConnection.
-    PeerConnectionObserver pco
-            = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      Log.d(TAG, "dataChannelSend() peerConnection is null");
-    } else {
-      pco.dataChannelSend(dataChannelId, bytebuffer, isBinary);
-    }
-  }
-
-  public void dataChannelClose(String peerConnectionId, String dataChannelId) {
-    // Forward to PeerConnectionObserver which deals with DataChannels
-    // because DataChannel is owned by PeerConnection.
-    PeerConnectionObserver pco
-            = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      Log.d(TAG, "dataChannelClose() peerConnection is null");
-    } else {
-      pco.dataChannelClose(dataChannelId);
-    }
-  }
-
-  public void setActivity(Activity activity) {
-    this.activity = activity;
-  }
 
     public void addTrack(String peerConnectionId, String trackId, List<String> streamIds, Result result) {
         PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
@@ -1919,14 +1919,14 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
         }
     }
 
-  public void removeTrack(String peerConnectionId, String senderId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("removeTrack", "peerConnection is null", result);
-    } else {
-      pco.removeTrack(senderId, result);
+    public void removeTrack(String peerConnectionId, String senderId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("removeTrack", "peerConnection is null", result);
+        } else {
+            pco.removeTrack(senderId, result);
+        }
     }
-  }
 
     public void addTransceiver(String peerConnectionId, String trackId, Map<String, Object> transceiverInit,
                                Result result) {
@@ -1943,96 +1943,96 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
         }
     }
 
-  public void addTransceiverOfType(String peerConnectionId, String mediaType, Map<String, Object> transceiverInit,
-                                   Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("addTransceiverOfType", "peerConnection is null", result);
-    } else {
-      pco.addTransceiverOfType(mediaType, transceiverInit, result);
+    public void addTransceiverOfType(String peerConnectionId, String mediaType, Map<String, Object> transceiverInit,
+                                     Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("addTransceiverOfType", "peerConnection is null", result);
+        } else {
+            pco.addTransceiverOfType(mediaType, transceiverInit, result);
+        }
     }
-  }
 
-  public void rtpTransceiverSetDirection(String peerConnectionId, String direction, String transceiverId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("rtpTransceiverSetDirection", "peerConnection is null", result);
-    } else {
-      pco.rtpTransceiverSetDirection(direction, transceiverId, result);
+    public void rtpTransceiverSetDirection(String peerConnectionId, String direction, String transceiverId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("rtpTransceiverSetDirection", "peerConnection is null", result);
+        } else {
+            pco.rtpTransceiverSetDirection(direction, transceiverId, result);
+        }
     }
-  }
 
-  public void rtpTransceiverSetCodecPreferences(String peerConnectionId, String transceiverId, List<Map<String, Object>> codecs, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("setCodecPreferences", "peerConnection is null", result);
-    } else {
-      pco.rtpTransceiverSetCodecPreferences(transceiverId, codecs, result);
+    public void rtpTransceiverSetCodecPreferences(String peerConnectionId, String transceiverId, List<Map<String, Object>> codecs, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("setCodecPreferences", "peerConnection is null", result);
+        } else {
+            pco.rtpTransceiverSetCodecPreferences(transceiverId, codecs, result);
+        }
     }
-  }
 
-  public void rtpTransceiverGetDirection(String peerConnectionId, String transceiverId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("rtpTransceiverSetDirection", "peerConnection is null", result);
-    } else {
-      pco.rtpTransceiverGetDirection(transceiverId, result);
+    public void rtpTransceiverGetDirection(String peerConnectionId, String transceiverId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("rtpTransceiverSetDirection", "peerConnection is null", result);
+        } else {
+            pco.rtpTransceiverGetDirection(transceiverId, result);
+        }
     }
-  }
 
-  public void rtpTransceiverGetCurrentDirection(String peerConnectionId, String transceiverId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("rtpTransceiverSetDirection", "peerConnection is null", result);
-    } else {
-      pco.rtpTransceiverGetCurrentDirection(transceiverId, result);
+    public void rtpTransceiverGetCurrentDirection(String peerConnectionId, String transceiverId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("rtpTransceiverSetDirection", "peerConnection is null", result);
+        } else {
+            pco.rtpTransceiverGetCurrentDirection(transceiverId, result);
+        }
     }
-  }
 
-  public void rtpTransceiverStop(String peerConnectionId, String transceiverId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("rtpTransceiverStop", "peerConnection is null", result);
-    } else {
-      pco.rtpTransceiverStop(transceiverId, result);
+    public void rtpTransceiverStop(String peerConnectionId, String transceiverId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("rtpTransceiverStop", "peerConnection is null", result);
+        } else {
+            pco.rtpTransceiverStop(transceiverId, result);
+        }
     }
-  }
 
-  public void rtpSenderSetParameters(String peerConnectionId, String rtpSenderId, Map<String, Object> parameters, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("rtpSenderSetParameters", "peerConnection is null", result);
-    } else {
-      pco.rtpSenderSetParameters(rtpSenderId, parameters, result);
+    public void rtpSenderSetParameters(String peerConnectionId, String rtpSenderId, Map<String, Object> parameters, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("rtpSenderSetParameters", "peerConnection is null", result);
+        } else {
+            pco.rtpSenderSetParameters(rtpSenderId, parameters, result);
+        }
     }
-  }
 
-  public void getSenders(String peerConnectionId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("getSenders", "peerConnection is null", result);
-    } else {
-      pco.getSenders(result);
+    public void getSenders(String peerConnectionId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("getSenders", "peerConnection is null", result);
+        } else {
+            pco.getSenders(result);
+        }
     }
-  }
 
-  public void getReceivers(String peerConnectionId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("getReceivers", "peerConnection is null", result);
-    } else {
-      pco.getReceivers(result);
+    public void getReceivers(String peerConnectionId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("getReceivers", "peerConnection is null", result);
+        } else {
+            pco.getReceivers(result);
+        }
     }
-  }
 
-  public void getTransceivers(String peerConnectionId, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("getTransceivers", "peerConnection is null", result);
-    } else {
-      pco.getTransceivers(result);
+    public void getTransceivers(String peerConnectionId, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("getTransceivers", "peerConnection is null", result);
+        } else {
+            pco.getTransceivers(result);
+        }
     }
-  }
 
     public void rtpSenderSetTrack(String peerConnectionId, String rtpSenderId, String trackId, boolean replace, Result result) {
         PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
@@ -2050,72 +2050,72 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider, 
             pco.rtpSenderSetTrack(rtpSenderId, track, result, replace);
         }
     }
-  }
-
-  public void rtpSenderSetStreams(String peerConnectionId, String rtpSenderId, List<String> streamIds, Result result) {
-    PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
-    if (pco == null || pco.getPeerConnection() == null) {
-      resultError("rtpSenderSetStreams", "peerConnection is null", result);
-    } else {
-      pco.rtpSenderSetStreams(rtpSenderId, streamIds, result);
-    }
-  }
 
 
-  public void reStartCamera() {
-    if (null == getUserMediaImpl) {
-      return;
-    }
-    getUserMediaImpl.reStartCamera(new GetUserMediaImpl.IsCameraEnabled() {
-      @Override
-      public boolean isEnabled(String id) {
-        if (!localTracks.containsKey(id)) {
-          return false;
+    public void rtpSenderSetStreams(String peerConnectionId, String rtpSenderId, List<String> streamIds, Result result) {
+        PeerConnectionObserver pco = mPeerConnectionObservers.get(peerConnectionId);
+        if (pco == null || pco.getPeerConnection() == null) {
+            resultError("rtpSenderSetStreams", "peerConnection is null", result);
+        } else {
+            pco.rtpSenderSetStreams(rtpSenderId, streamIds, result);
         }
-        return localTracks.get(id).enabled();
-      }
-    });
-  }
+    }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  void requestPermissions(
-          final ArrayList<String> permissions,
-          final Callback successCallback,
-          final Callback errorCallback) {
-    PermissionUtils.Callback callback =
-            (permissions_, grantResults) -> {
-              List<String> grantedPermissions = new ArrayList<>();
-              List<String> deniedPermissions = new ArrayList<>();
 
-              for (int i = 0; i < permissions_.length; ++i) {
-                String permission = permissions_[i];
-                int grantResult = grantResults[i];
-
-                if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                  grantedPermissions.add(permission);
-                } else {
-                  deniedPermissions.add(permission);
+    public void reStartCamera() {
+        if (null == getUserMediaImpl) {
+            return;
+        }
+        getUserMediaImpl.reStartCamera(new GetUserMediaImpl.IsCameraEnabled() {
+            @Override
+            public boolean isEnabled(String id) {
+                if (!localTracks.containsKey(id)) {
+                    return false;
                 }
-              }
+                return localTracks.get(id).enabled();
+            }
+        });
+    }
 
-              // Success means that all requested permissions were granted.
-              for (String p : permissions) {
-                if (!grantedPermissions.contains(p)) {
-                  // According to step 6 of the getUserMedia() algorithm
-                  // "if the result is denied, jump to the step Permission
-                  // Failure."
-                  errorCallback.invoke(deniedPermissions);
-                  return;
-                }
-              }
-              successCallback.invoke(grantedPermissions);
-            };
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    void requestPermissions(
+            final ArrayList<String> permissions,
+            final Callback successCallback,
+            final Callback errorCallback) {
+        PermissionUtils.Callback callback =
+                (permissions_, grantResults) -> {
+                    List<String> grantedPermissions = new ArrayList<>();
+                    List<String> deniedPermissions = new ArrayList<>();
 
-    final Activity activity = getActivity();
-    final Context context = getApplicationContext();
-    PermissionUtils.requestPermissions(
-            context,
-            activity,
-            permissions.toArray(new String[permissions.size()]), callback);
-  }
+                    for (int i = 0; i < permissions_.length; ++i) {
+                        String permission = permissions_[i];
+                        int grantResult = grantResults[i];
+
+                        if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                            grantedPermissions.add(permission);
+                        } else {
+                            deniedPermissions.add(permission);
+                        }
+                    }
+
+                    // Success means that all requested permissions were granted.
+                    for (String p : permissions) {
+                        if (!grantedPermissions.contains(p)) {
+                            // According to step 6 of the getUserMedia() algorithm
+                            // "if the result is denied, jump to the step Permission
+                            // Failure."
+                            errorCallback.invoke(deniedPermissions);
+                            return;
+                        }
+                    }
+                    successCallback.invoke(grantedPermissions);
+                };
+
+        final Activity activity = getActivity();
+        final Context context = getApplicationContext();
+        PermissionUtils.requestPermissions(
+                context,
+                activity,
+                permissions.toArray(new String[permissions.size()]), callback);
+    }
 }

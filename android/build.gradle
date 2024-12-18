@@ -55,5 +55,5 @@ dependencies {
     implementation 'io.github.webrtc-sdk:android:125.6422.03'
     implementation 'com.github.davidliu:audioswitch:89582c47c9a04c62f90aa5e57251af4800a62c9a'
     implementation 'androidx.annotation:annotation:1.8.0'
-    compileOnly files('/Users/brahman/Desktop/flutter/bin/cache/artifacts/engine/android-arm/flutter.jar')
+//    compileOnly files('/Users/brahman/Desktop/flutter/bin/cache/artifacts/engine/android-arm/flutter.jar')
 }

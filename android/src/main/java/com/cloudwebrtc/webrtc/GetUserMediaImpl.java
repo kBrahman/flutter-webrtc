@@ -86,7 +86,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
  * The implementation of {@code getUserMedia} extracted into a separate file in order to reduce
  * complexity and to (somewhat) separate concerns.
  */
-class GetUserMediaImpl {
+public class GetUserMediaImpl {
     private static final int DEFAULT_WIDTH = 1280;
     private static final int DEFAULT_HEIGHT = 720;
     private static final int DEFAULT_FPS = 30;
@@ -1261,12 +1261,16 @@ class GetUserMediaImpl {
     }
 
     public class VideoCapturerInfo {
-        VideoCapturer capturer;
+        public  VideoCapturer capturer;
         int width;
         int height;
         int fps;
         boolean isScreenCapture = false;
         CameraEventsHandler cameraEventsHandler;
+    }
+
+    public VideoCapturerInfo getCapturerInfo(String trackId) {
+        return mVideoCapturers.get(trackId);
     }
 
     @RequiresApi(api = VERSION_CODES.M)
